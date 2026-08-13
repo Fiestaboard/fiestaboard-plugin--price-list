@@ -1,0 +1,300 @@
+{
+  "id": "price_list",
+  "name": "Price List",
+  "version": "1.0.0",
+  "description": "Display a styled price list or menu sign with your own items, prices, and colors, plus automatic page rotation for longer menus.",
+  "author": "FiestaBoard Team",
+  "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--price-list",
+  "documentation": "README.md",
+  "icon": "tags",
+  "category": "utility",
+  "fiestaboard_version": ">=4.2.0",
+  "live_data": true,
+  "settings_schema": {
+    "type": "object",
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "title": "Enable Price List",
+        "default": false
+      },
+      "title": {
+        "type": "string",
+        "title": "Sign Title",
+        "description": "Optional heading shown at the top of every page (e.g. DAILY BREW, HAPPY HOUR). Leave blank for no title.",
+        "default": "",
+        "maxLength": 18
+      },
+      "title_color": {
+        "type": "string",
+        "title": "Title Accent Color",
+        "description": "Show a colored tile on each side of the title.",
+        "enum": ["none", "red", "orange", "yellow", "green", "blue", "violet", "white"],
+        "default": "none"
+      },
+      "items": {
+        "type": "array",
+        "title": "Items",
+        "description": "The products and prices to show, in order.",
+        "minItems": 1,
+        "maxItems": 60,
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "description": "Item name (e.g. Latte).",
+              "maxLength": 16
+            },
+            "price": {
+              "type": "string",
+              "title": "Price",
+              "description": "The amount only (e.g. 4.50) - the currency symbol is added automatically. Any short text works too (e.g. MKT).",
+              "maxLength": 7
+            },
+            "color": {
+              "type": "string",
+              "title": "Color Bullet",
+              "description": "Optional colored tile shown before the item name.",
+              "enum": ["none", "red", "orange", "yellow", "green", "blue", "violet", "white"],
+              "default": "none"
+            }
+          },
+          "required": ["name", "price"]
+        }
+      },
+      "currency_symbol": {
+        "type": "string",
+        "title": "Currency Symbol",
+        "description": "Added to every price (e.g. $, USD, KR). Leave blank for none. Board-safe characters only.",
+        "default": "$",
+        "maxLength": 4
+      },
+      "currency_position": {
+        "type": "string",
+        "title": "Currency Position",
+        "description": "Show the currency symbol before the price ($4.50) or after it (4.50 KR).",
+        "enum": ["before", "after"],
+        "default": "before"
+      },
+      "price_style": {
+        "type": "string",
+        "title": "Line Style",
+        "description": "How each item line is laid out: dots (LATTE....$4.50), spaces (LATTE    $4.50), or compact (LATTE $4.50).",
+        "enum": ["dots", "spaces", "compact"],
+        "default": "dots"
+      },
+      "items_per_page": {
+        "type": "integer",
+        "title": "Items Per Page",
+        "description": "Maximum items shown at once. A title takes one line, so pages with a title fit at most 5 items.",
+        "default": 5,
+        "minimum": 1,
+        "maximum": 6
+      },
+      "rotation_seconds": {
+        "type": "integer",
+        "title": "Page Rotation (seconds)",
+        "description": "How long each page shows before rotating to the next, when items span multiple pages. The board refreshes on its own schedule (usually every 15s), so rotation lands on the next refresh.",
+        "default": 30,
+        "minimum": 10,
+        "maximum": 3600
+      }
+    },
+    "required": ["items"]
+  },
+  "variables": {
+    "groups": {
+      "sign": {
+        "label": "Sign Info"
+      },
+      "lines": {
+        "label": "Current Page Lines"
+      },
+      "items": {
+        "label": "All Items"
+      }
+    },
+    "simple": {
+      "title": {
+        "description": "The configured sign title",
+        "type": "string",
+        "max_length": 18,
+        "group": "sign",
+        "example": "DAILY BREW"
+      },
+      "page_number": {
+        "description": "Page currently showing (1-based)",
+        "type": "number",
+        "group": "sign",
+        "example": "1"
+      },
+      "page_count": {
+        "description": "Total number of pages",
+        "type": "number",
+        "group": "sign",
+        "example": "2"
+      },
+      "page_label": {
+        "description": "Current page as PAGE X/Y (empty when there is only one page)",
+        "type": "string",
+        "max_length": 10,
+        "group": "sign",
+        "example": "PAGE 1/2"
+      },
+      "item_count": {
+        "description": "Total number of configured items",
+        "type": "number",
+        "group": "sign",
+        "example": "8"
+      },
+      "line_1": {
+        "description": "Line 1 of the current page (rotates automatically)",
+        "type": "string",
+        "max_length": 22,
+        "group": "lines",
+        "example": "{65} DAILY BREW {65}"
+      },
+      "line_2": {
+        "description": "Line 2 of the current page (rotates automatically)",
+        "type": "string",
+        "max_length": 22,
+        "group": "lines",
+        "example": "LATTE...........$4.50"
+      },
+      "line_3": {
+        "description": "Line 3 of the current page (rotates automatically)",
+        "type": "string",
+        "max_length": 22,
+        "group": "lines",
+        "example": "CAPPUCCINO......$4.25"
+      },
+      "line_4": {
+        "description": "Line 4 of the current page (rotates automatically)",
+        "type": "string",
+        "max_length": 22,
+        "group": "lines",
+        "example": "DRIP COFFEE.....$3.00"
+      },
+      "line_5": {
+        "description": "Line 5 of the current page (rotates automatically)",
+        "type": "string",
+        "max_length": 22,
+        "group": "lines",
+        "example": "COLD BREW.......$4.75"
+      },
+      "line_6": {
+        "description": "Line 6 of the current page (rotates automatically)",
+        "type": "string",
+        "max_length": 22,
+        "group": "lines",
+        "example": "MATCHA..........$5.50"
+      }
+    },
+    "arrays": {
+      "items": {
+        "label_field": "name",
+        "item_fields": ["name", "price", "price_display", "formatted", "color_tile"]
+      }
+    }
+  },
+  "max_lengths": {
+    "items.*.name": 16,
+    "items.*.price": 7,
+    "items.*.price_display": 12,
+    "items.*.formatted": 22,
+    "items.*.color_tile": 4
+  },
+  "teaser": "LATTE ... $4.50",
+  "previews": [
+    {
+      "label": "Coffee Shop",
+      "device_type": "flagship",
+      "rows": [
+        "    {65} DAILY BREW {65}",
+        "",
+        "LATTE............$4.50",
+        "CAPPUCCINO.......$4.25",
+        "DRIP COFFEE......$3.00",
+        "{66} COLD BREW......$4.75"
+      ]
+    },
+    {
+      "label": "Brewery Tap List",
+      "device_type": "flagship",
+      "rows": [
+        "  {64} TAPROOM DRAFTS {64}",
+        "{65} HAZY IPA.......$7.00",
+        "WEST COAST IPA...$6.50",
+        "{63} AMBER ALE......$6.00",
+        "PILSNER..........$5.50",
+        "STOUT NITRO......$7.50"
+      ]
+    },
+    {
+      "label": "Happy Hour",
+      "device_type": "flagship",
+      "rows": [
+        "    {68} HAPPY HOUR {68}",
+        "",
+        "{63} HOUSE RED      $6.00",
+        "{65} DRAFT PINT     $4.00",
+        "WELL DRINKS      $5.00",
+        "{64} WINGS          $7.50"
+      ]
+    },
+    {
+      "label": "Note",
+      "device_type": "note",
+      "rows": [
+        "DAILY BREW",
+        "LATTE.....$4.50",
+        "DRIP......$3.00"
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "docs/board-display.png",
+      "alt": "Price List displayed on a Vestaboard",
+      "caption": "A coffee shop price sign with a title and dot-leader prices",
+      "primary": true
+    }
+  ],
+  "demo": {
+    "flagship": {
+      "name": "Menu Board",
+      "template": [
+        "{{price_list.line_1}}",
+        "{{price_list.line_2}}",
+        "{{price_list.line_3}}",
+        "{{price_list.line_4}}",
+        "{{price_list.line_5}}",
+        "{{price_list.line_6}}"
+      ],
+      "line_metadata": [
+        {"alignment": "left", "wrap": false},
+        {"alignment": "left", "wrap": false},
+        {"alignment": "left", "wrap": false},
+        {"alignment": "left", "wrap": false},
+        {"alignment": "left", "wrap": false},
+        {"alignment": "left", "wrap": false}
+      ]
+    },
+    "note": {
+      "name": "Price List (Note)",
+      "device_type": "note",
+      "template": [
+        "{{price_list.title}}",
+        "{{price_list.items.0.name}} {{price_list.items.0.price_display}}",
+        "{{price_list.items.1.name}} {{price_list.items.1.price_display}}"
+      ],
+      "line_metadata": [
+        {"alignment": "center", "wrap": false},
+        {"alignment": "left", "wrap": false},
+        {"alignment": "left", "wrap": false}
+      ]
+    }
+  }
+}
