@@ -2,8 +2,6 @@
 
 Display a styled price list or menu sign with your own items, prices, and colors, plus automatic page rotation for longer menus.
 
-![Price List Display](./docs/board-display.png)
-
 **→ [Setup Guide](./docs/SETUP.md)**
 
 ## Overview
