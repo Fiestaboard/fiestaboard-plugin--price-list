@@ -296,7 +296,13 @@ class TestManifestMetadata:
     def test_preview_rows_fit_board_width(self, manifest_data):
         widths = {"flagship": 22, "note": 15}
         for preview in manifest_data["previews"]:
-            width = widths[preview["device_type"]]
+            device_type = preview["device_type"]
+            if device_type == "note_array":
+                width = preview["notes_wide"] * 15
+                height = preview["notes_tall"] * 3
+                assert len(preview["rows"]) <= height, f"{preview['label']}: too many rows"
+            else:
+                width = widths[device_type]
             for row in preview["rows"]:
                 assert tile_len(row) <= width, f"{preview['label']}: {row!r} too wide"
         assert tile_len(manifest_data["teaser"]) <= 15

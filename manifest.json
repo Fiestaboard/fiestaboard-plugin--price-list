@@ -1,7 +1,7 @@
 {
   "id": "price_list",
   "name": "Price List",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Display a styled price list or menu sign with your own items, prices, and colors, plus automatic page rotation for longer menus.",
   "author": "FiestaBoard Team",
   "repository": "https://github.com/Fiestaboard/fiestaboard-plugin--price-list",
@@ -88,10 +88,10 @@
       "items_per_page": {
         "type": "integer",
         "title": "Items Per Page",
-        "description": "Maximum items shown at once. A title takes one line, so pages with a title fit at most 5 items.",
+        "description": "Maximum items shown at once, automatically capped to fit your board (a title takes one row). One config works across every board size you own.",
         "default": 5,
         "minimum": 1,
-        "maximum": 6
+        "maximum": 24
       },
       "rotation_seconds": {
         "type": "integer",
@@ -203,7 +203,7 @@
     "items.*.name": 16,
     "items.*.price": 7,
     "items.*.price_display": 12,
-    "items.*.formatted": 22,
+    "items.*.formatted": 120,
     "items.*.color_tile": 4
   },
   "teaser": "LATTE ... $4.50",
@@ -251,6 +251,20 @@
         "DAILY BREW",
         "LATTE.....$4.50",
         "DRIP......$3.00"
+      ]
+    },
+    {
+      "label": "Coffee Shop (2x2 Note Array)",
+      "device_type": "note_array",
+      "notes_wide": 2,
+      "notes_tall": 2,
+      "rows": [
+        "        {65} DAILY BREW {65}",
+        "",
+        "LATTE....................$4.50",
+        "{66} COLD BREW..............$4.75",
+        "CAPPUCCINO...............$4.25",
+        "DRIP COFFEE..............$3.00"
       ]
     }
   ],
